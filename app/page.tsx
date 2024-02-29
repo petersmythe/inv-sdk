@@ -1,6 +1,42 @@
+"use client"
+
 import Image from "next/image";
+import { giga } from 'gigachat';
+import { useEffect } from "react";
+
+interface AccountDetails {
+
+}
+
+async function getTransactionData() {
+  try {
+    const accountList = await giga.api.privateClient.pbsa.accounts.list();
+    const transactions = await giga.api.privateClient.pbsa.transactions.get({
+      accountId: accountList.result.PrivateBankAccounts[0].AccountNumberForRequests,
+      dateFrom: '09/10/2022',
+      dateTo: '08/11/2022'
+    });
+    return transactions.result;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 
 export default function Home() {
+
+  useEffect(() => {
+    giga.platform.init().then(() => giga.platform.initSession())
+    giga.data.getClientBasicDetails().then((res:any) => {
+      alert(JSON.stringify(res.result, null, 2))    
+    })
+
+    getTransactionData().then((res) => {
+alert(JSON.stringify(res,null,2))
+    })
+  }, [])
+
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
